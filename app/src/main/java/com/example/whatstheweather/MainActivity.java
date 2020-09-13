@@ -18,8 +18,6 @@ import org.json.JSONObject;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -69,33 +67,15 @@ public class MainActivity extends AppCompatActivity {
             try {
                 String main = "";
                 String description = "";
-                String temperatureCelsius = "";
-                String feels_like_Celsius = "";
-                String temperatureFahrenheit = "";
-                String feels_like_Fahrenheit = "";
-
                 JSONObject jsonObject = new JSONObject(s);
-
                 String weatherInfo = jsonObject.getString("weather");
-
-                JSONArray weatherArr = new JSONArray(weatherInfo);
-
-                for (int i = 0; i < weatherArr.length(); i++) {
-                    JSONObject weatherObject= weatherArr.getJSONObject(i);
-                    main = weatherObject.getString("main");
-                    description = weatherObject.getString("description");
+                JSONArray arr = new JSONArray(weatherInfo);
+                for (int i = 0; i < arr.length(); i++) {
+                    JSONObject jsonPart= arr.getJSONObject(i);
+                    main = jsonPart.getString("main");
+                    description = jsonPart.getString("description");
                 }
-
-                String temperatureInfo = jsonObject.getString("main");
-
-                JSONObject temperatureArr = new JSONObject(temperatureInfo);
-
-                temperatureCelsius = String.valueOf(round((Double.parseDouble(temperatureArr.getString("temp"))), 1));
-                feels_like_Celsius = String.valueOf(round((Double.parseDouble(temperatureArr.getString("feels_like"))), 1));
-                temperatureFahrenheit = String.valueOf(round((Double.parseDouble(temperatureCelsius)*1.8)+32, 1));
-                feels_like_Fahrenheit = String.valueOf(round((Double.parseDouble(feels_like_Celsius)*1.8)+32, 1));
-
-                weatherTextView.setText(main + ": " + description + "\n\n" + "Temperature: " + temperatureCelsius + "˚C" + " or " + temperatureFahrenheit + "˚F" + "\n\n" + "Feels like: " + feels_like_Celsius + "˚C" + " or " + feels_like_Fahrenheit + "˚F");
+                weatherTextView.setText(main + ": " + description);
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(MainActivity.this, "No weather data available", Toast.LENGTH_LONG).show();
@@ -123,14 +103,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
